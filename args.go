@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"os"
 	"strconv"
 )
 
@@ -37,45 +38,56 @@ func ParseArgs() *Args {
 
 func parseCreateArgs() {
 	if flag.NArg() < 1 {
-		flag.Usage()
+		usageAndExit()
 	}
 
 	a.Title = flag.Arg(0)
 }
 
 func parseDeleteArgs() {
-	if flag.NArg() < 1 {
-		flag.Usage()
-	}
-
-	i := flag.Arg(0)
-	id, err := strconv.Atoi(i)
-	if err != nil {
-		flag.Usage()
-	}
-
-	a.ID = id
+	a.ID = parseOptionalInt(0, 0)
 }
 
 func parseMoveArgs() {
-	if flag.NArg() < 2 {
-		flag.Usage()
+	a.ID = parseInt(0)
+	a.To = parseOptionalInt(1, 0)
+}
+
+func parseInt(arg int) int {
+	if flag.NArg() < arg {
+		usageAndExit()
 	}
 
-	f := flag.Arg(0)
-	from, err := strconv.Atoi(f)
+	a := flag.Arg(arg)
+	i, err := strconv.Atoi(a)
 	if err != nil {
-		flag.Usage()
+		usageAndExit()
 	}
 
-	t := flag.Arg(1)
-	to, err := strconv.Atoi(t)
+	return i
+}
+
+func parseOptionalInt(arg int, fallback int) int {
+	if flag.NArg() < arg {
+		return fallback
+	}
+
+	a := flag.Arg(arg)
+	if a == "" {
+		return fallback
+	}
+
+	i, err := strconv.Atoi(a)
 	if err != nil {
-		flag.Usage()
+		usageAndExit()
 	}
 
-	a.ID = from
-	a.To = to
+	return i
+}
+
+func usageAndExit() {
+	flag.Usage()
+	os.Exit(1)
 }
 
 func init() {
