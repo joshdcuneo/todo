@@ -73,7 +73,7 @@ func (s *Store) Add(t Todo) {
 }
 
 func (s *Store) Delete(id int) {
-	for i, _ := range s.data {
+	for i := range s.data {
 		if i == id {
 			s.data = append(s.data[:i], s.data[i+1:]...)
 		}
